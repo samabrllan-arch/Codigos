@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Acceso Seguro - Elite</title>
+    
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        /* =========================================================
+           VARIABLES Y RESET
+           ========================================================= */
+        :root {
+            --bg-color: #050505;
+            --card-bg: #0a0a0a;
+            --accent: #7c3aed;
+            --accent-glow: rgba(124, 58, 237, 0.4);
+            --success: #00ff88;
+            --error: #ff0055;
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --border-color: #1a1a1a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 50% 0%, #1a1025 0%, transparent 50%);
+        }
+
+        /* =========================================================
+           CONTENEDOR PRINCIPAL
+           ========================================================= */
+        .premium-container {
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .boveda-card {
+            background: linear-gradient(145deg, var(--card-bg) 0%, #000000 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px var(--accent-glow);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* =========================================================
+           THUMBNAIL (IMAGEN)
+           ========================================================= */
+        .thumbnail-wrapper {
+            width: 100%;
+            height: 200px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            border: 1px solid #222;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .thumbnail-wrapper:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px var(--accent-glow);
+        }
+
+        .thumbnail-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Aquí va el link vacío para tu imagen */
+            background: url('') center/cover no-repeat #111; 
+            display: block;
+        }
+
+        .thumbnail-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .thumbnail-wrapper:hover .thumbnail-overlay {
+            opacity: 1;
+        }
+
+        /* =========================================================
+           INPUTS Y BOTONES
+           ========================================================= */
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            color: var(--accent);
+            font-size: 22px;
+        }
+
+        .elite-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #333;
+            color: #fff;
+            padding: 16px 16px 16px 50px;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .elite-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+            box-shadow: 0 5px 20px var(--accent-glow);
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            background: #8b5cf6;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6);
+        }
+
+        .btn-submit:disabled {
+            background: #333;
+            color: #777;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* =========================================================
+           ESTADOS Y RESULTADOS
+           ========================================================= */
+        .status-msg {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.4;
+            margin-top: 20px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s ease;
+            display: none;
+        }
+
+        .status-msg.show {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .status-msg.info { background: rgba(124, 58, 237, 0.1); border: 1px solid var(--accent); color: #fff; }
+        .status-msg.error { background: rgba(255, 0, 85, 0.1); border: 1px solid var(--error); color: #ff4d88; }
+        .status-msg.success { background: rgba(0, 255, 136, 0.1); border: 1px solid var(--success); color: var(--success); }
+
+        .result-container {
+            margin-top: 20px;
+            background: rgba(0,255,136,0.05);
+            border: 1px dashed rgba(0,255,136,0.5);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .btn-link-neon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--success);
+            color: #000;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-weight: 900;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(0,255,136,0.3);
+        }
+
+        .btn-link-neon:hover {
+            background: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,255,136,0.6);
+        }
+
+        /* =========================================================
+           MODAL SWEETALERT Y ANIMACIONES
+           ========================================================= */
+        .fa-spin { animation: spin 1s infinite linear; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .swal-elite-popup {
+            border: 1px solid rgba(124, 58, 237, 0.2) !important;
+            border-radius: 24px !important;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.9), 0 0 40px var(--accent-glow) !important;
+            background: linear-gradient(145deg, #0a0a0a, #0f0f11) !important;
+        }
+
+        .iframe-wrapper {
+            position: relative;
+            width: 100%;
+            height: 60vh;
+            min-height: 450px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 255, 136, 0.4);
+            box-shadow: 0 10px 30px rgba(0,255,136,0.1);
+            background: #ffffff; /* Fondo blanco para el iframe del correo */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="premium-container">
+        <div class="boveda-card">
+            
+            <div class="thumbnail-wrapper" onclick="enfocarInput()">
+                <img src="" alt="Thumbnail Premium" class="thumbnail-image">
+                <div class="thumbnail-overlay">
+                    <span class="material-icons-round" style="font-size: 40px; color: #fff;">touch_app</span>
+                </div>
+            </div>
+
+            <div id="formAcceso">
+                <div class="input-group">
+                    <label>Correo de la Cuenta</label>
+                    <div class="input-wrapper">
+                        <span class="material-icons-round input-icon">email</span>
+                        <input type="email" id="txtEmail" class="elite-input" placeholder="ejemplo@gmail.com" autocomplete="off">
+                    </div>
+                </div>
+
+                <button id="btnBuscar" class="btn-submit" onclick="ejecutarBusqueda()">
+                    <span class="material-icons-round" id="btnIcon">search</span>
+                    <span id="btnText">BUSCAR CORREO</span>
+                </button>
+            </div>
+
+            <div id="statusArea" class="status-msg">
+                <span class="material-icons-round icon-status">terminal</span>
+                <span id="statusText">Sistema listo.</span>
+            </div>
+
+            <div id="resultadoFinal" class="result-container">
+                <p style="font-size: 0.75rem; color: var(--success); font-weight: 800; letter-spacing: 1px; margin-bottom: 15px;">CORREO ENCONTRADO</p>
+                <button onclick="abrirModalCorreo()" class="btn-link-neon">
+                    <span class="material-icons-round">mark_email_unread</span> 
+                    VER CORREO ORIGINAL
+                </button>
+                <div id="fechaMsg" style="margin-top: 15px; font-size: 0.75rem; color: #888; font-weight: 600;"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        /**
+         * ===============================================================
+         * LÓGICA JAVASCRIPT - VERSIÓN ELITE
+         * ===============================================================
+         */
+
+        // 1. CONFIGURACIÓN
+        const URL_JSON_GITHUB = "https://samabrllan-arch.github.io/Json-asunto/asuntos.json";
+
+        const LISTA_OBREROS = [
+            "https://script.google.com/macros/s/AKfycbyzpyL0LG2cnf9zln8mN9SaTcuRPm-E3lQTQSGlxiuJLxTlLtaStv7BtcjYbIib3EQl/exec"
+        ];
+
+        let correoHTMLActual = "";
+        let enCooldown = false;
+
+        // Enter para ejecutar en el input
+        document.getElementById("txtEmail").addEventListener("keydown", e => {
+            if (e.key === "Enter") ejecutarBusqueda();
+        });
+
+        // Enfocar el input al dar clic en la imagen
+        function enfocarInput() {
+            document.getElementById("txtEmail").focus();
+        }
+
+        // Utilidad para cambiar mensajes de estado
+        async function mostrarEstado(texto, icono, clase = 'info', delay = 700) {
+            const status = document.getElementById("statusArea");
+            const textEl = document.getElementById("statusText");
+            const iconEl = status.querySelector(".icon-status");
+            
+            status.className = `status-msg show ${clase}`;
+            iconEl.innerText = icono;
+            textEl.innerHTML = texto;
+            
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+
+        /**
+         * 2. FLUJO PRINCIPAL DE BÚSQUEDA
+         */
+        async function ejecutarBusqueda() {
+            if (enCooldown) return;
+
+            const email = document.getElementById("txtEmail").value.trim();
+            const btn = document.getElementById("btnBuscar");
+            const txtBtn = document.getElementById("btnText");
+            const iconBtn = document.getElementById("btnIcon");
+            const resBox = document.getElementById("resultadoFinal");
+            const fechaMsg = document.getElementById("fechaMsg");
+
+            if (!email) {
+                Swal.fire({ icon: 'warning', title: 'Falta información', text: 'Por favor, ingresa el correo de la cuenta.', background: '#0a0a0a', color: '#fff' });
+                return;
+            }
+
+            // Reset de UI
+            btn.disabled = true;
+            txtBtn.innerText = "ESCANÉANDO RED...";
+            iconBtn.innerText = "sync";
+            iconBtn.classList.add("fa-spin"); 
+            resBox.style.display = "none";
+            correoHTMLActual = "";
+
+            try {
+                // FASE 1: Obtener JSON de GitHub
+                await mostrarEstado("Conectando con base de datos de asuntos...", "cloud_download", "info", 500);
+                
+                let asuntoAEnviar = "";
+                try {
+                    const resJson = await fetch(URL_JSON_GITHUB, { cache: "no-store" });
+                    if (!resJson.ok) throw new Error("No se pudo cargar el JSON.");
+                    const dataJson = await resJson.json();
+                    
+                    // Asegúrate de que tu JSON tenga la llave "asunto"
+                    asuntoAEnviar = dataJson.asunto; 
+                    if (!asuntoAEnviar) throw new Error("Formato de JSON inválido.");
+                } catch (error) {
+                    throw new Error("Error al obtener las reglas de búsqueda (JSON). Revisa la URL.");
+                }
+
+                await mostrarEstado("Asuntos obtenidos. Iniciando barrido en los servidores obreros...", "memory");
+
+                // FASE 2: Iterar por los obreros enviando Email y Asunto
+                let infoExito = null;
+
+                for (let i = 0; i < LISTA_OBREROS.length; i++) {
+                    try {
+                        const urlBusqueda = `${LISTA_OBREROS[i]}?usuario=${encodeURIComponent(email)}&asunto=${encodeURIComponent(asuntoAEnviar)}`;
+                        const r = await fetch(urlBusqueda);
+                        const d = await r.json();
+
+                        if (d.exito && d.encontrado && d.cuerpo) {
+                            infoExito = d;
+                            correoHTMLActual = d.cuerpo; // Guardamos el HTML del correo
+                            break; // Detenemos la búsqueda si encontramos uno
+                        }
+                    } catch (e) {
+                        console.warn(`Error en obrero ${i + 1}:`, e);
+                    }
+                }
+
+                if (!infoExito) throw new Error("No se encontró ningún correo reciente con ese parámetro.");
+
+                // FASE 3: Mostrar el éxito
+                fechaMsg.innerHTML = `<span class="material-icons-round" style="font-size:14px; vertical-align:middle;">schedule</span> Recibido a las: ${infoExito.hora || "Reciente"}`;
+                resBox.style.display = "block";
+
+                await mostrarEstado("Proceso finalizado. Correo interceptado con éxito.", "check_circle", "success");
+                
+                // Finalizar UI y arrancar cooldown
+                iconBtn.classList.remove("fa-spin");
+                iniciarCooldown();
+
+            } catch (err) {
+                await mostrarEstado(err.message, "error", "error");
+                
+                btn.disabled = false;
+                txtBtn.innerText = "INTENTAR DE NUEVO";
+                iconBtn.classList.remove("fa-spin");
+                iconBtn.innerText = "refresh";
+            }
+        }
+
+        /**
+         * 3. TEMPORIZADOR DE COOLDOWN
+         */
+        function iniciarCooldown() {
+            enCooldown = true;
+            let restante = 20; // 20 Segundos de espera
+            const btn = document.getElementById("btnBuscar");
+            const txtBtn = document.getElementById("btnText");
+            const iconBtn = document.getElementById("btnIcon");
+
+            btn.disabled = true;
+
+            const timer = setInterval(() => {
+                restante--;
+                txtBtn.innerText = `ESPERA ${restante}S`;
+
+                if (restante <= 0) {
+                    clearInterval(timer);
+                    enCooldown = false;
+                    btn.disabled = false;
+                    txtBtn.innerText = "BUSCAR CORREO";
+                    if(iconBtn) iconBtn.innerText = "search";
+                }
+            }, 1000);
+        }
+
+        /**
+         * 4. ABRIR MODAL CON EL HTML DEL CORREO
+         */
+        window.abrirModalCorreo = function() {
+            const isMobile = window.innerWidth <= 768;
+            
+            Swal.fire({
+                html: `
+                    <div style="padding: 5px;">
+                        <h2 style="color: #fff; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px; font-size: ${isMobile ? '1.2rem' : '1.5rem'};">Bandeja de Entrada Segura</h2>
+                        <div class="iframe-wrapper">
+                            <iframe id="iframeCorreo" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                        </div>
+                    </div>
+                `,
+                showConfirmButton: true,
+                confirmButtonText: '<span class="material-icons-round" style="vertical-align:middle; margin-right:5px;">check_circle</span> CERRAR',
+                confirmButtonColor: '#00ff88',
+                background: '#0a0a0a',
+                width: isMobile ? '98%' : '800px',
+                padding: isMobile ? '10px' : '20px',
+                customClass: { popup: 'swal-elite-popup' },
+                didOpen: () => {
+                    // Inyectamos el HTML puro directamente en el iframe una vez abierto el modal
+                    const iframe = document.getElementById('iframeCorreo');
+                    const doc = iframe.contentWindow.document;
+                    doc.open();
+                    doc.write(correoHTMLActual);
+                    doc.close();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
