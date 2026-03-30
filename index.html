@@ -3,42 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal de Acceso Seguro - Elite [DEBUG MODE]</title>
+    <title>Portal de Acceso Seguro - Elite</title>
     
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
+        
         :root {
-            --bg-color: #050505;
-            --card-bg: rgba(10, 10, 10, 0.85); 
-            --accent: #7c3aed;
-            --accent-glow: rgba(124, 58, 237, 0.4);
+            
+            --bg-color: #050303;
+            --card-bg: rgba(15, 12, 12, 0.85); 
+            --accent: #dc2626; 
+            --accent-hover: #b91c1c;
+            --accent-glow: rgba(220, 38, 38, 0.35);
             --success: #00ff88;
             --error: #ff0055;
-            --warning: #ffa500;
-            --text-main: #ffffff;
-            --text-muted: #888888;
-            --border-color: #222222;
-            --input-bg: rgba(0, 0, 0, 0.5);
-            --modal-bg: #0a0a0a;
-            --modal-grad: linear-gradient(145deg, #0a0a0a, #0f0f11);
+            --warning: #ffb800;
+            --text-main: #f8f9fa;
+            --text-muted: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --input-bg: rgba(0, 0, 0, 0.4);
+            --modal-bg: #0c0a0a;
+            --modal-grad: linear-gradient(145deg, #0c0a0a, #151111);
             --btn-text: #ffffff;
-            --shadow-card: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px var(--accent-glow);
+            --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 1), 0 0 40px var(--accent-glow);
+            --glass-blur: blur(16px);
+
+            --logo-filter: grayscale(1) brightness(0.8) opacity(0.7);
         }
 
         body.light-mode {
-            --bg-color: #f0f2f5;
-            --card-bg: rgba(255, 255, 255, 0.9);
-            --text-main: #111111;
-            --text-muted: #555555;
-            --border-color: #dddddd;
-            --input-bg: rgba(255, 255, 255, 0.8);
+            
+            --bg-color: #f3f4f6;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-main: #111827;
+            --text-muted: #4b5563;
+            --border-color: rgba(0, 0, 0, 0.15);
+            --input-bg: #ffffff;
             --modal-bg: #ffffff;
-            --modal-grad: linear-gradient(145deg, #ffffff, #f9f9f9);
+            --modal-grad: linear-gradient(145deg, #ffffff, #f9fafb);
             --btn-text: #ffffff;
-            --shadow-card: 0 20px 50px rgba(0,0,0,0.1), 0 0 30px rgba(124, 58, 237, 0.2);
+            --shadow-card: 0 20px 40px -10px rgba(0, 0, 0, 0.1), 0 0 30px rgba(220, 38, 38, 0.15);
+
+            --success: #059669;
+
+            --logo-filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
         }
 
         * {
@@ -46,7 +57,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Inter', sans-serif;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            -webkit-font-smoothing: antialiased;
         }
 
         body {
@@ -57,76 +68,99 @@
             align-items: center;
             min-height: 100vh;
             background-image: 
-                linear-gradient(to bottom, rgba(5, 5, 5, 0.8), rgba(0, 0, 0, 0.95)),
-                url('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1920&auto=format&fit=crop');
+                linear-gradient(to bottom, rgba(5, 3, 3, 0.85), rgba(5, 3, 3, 0.98)),
+                url('https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=1920&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            transition: background-image 0.5s ease;
+            transition: background-image 0.6s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.6s;
         }
 
         body.light-mode {
             background-image: 
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.85), rgba(240, 242, 245, 0.95)),
-                url('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1920&auto=format&fit=crop');
+                linear-gradient(to bottom, rgba(243, 244, 246, 0.85), rgba(243, 244, 246, 0.98)),
+                url('https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=1920&auto=format&fit=crop');
+        }
+
+        .logo-container {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            z-index: 999;
+            pointer-events: none; 
+        }
+
+        .logo-image {
+            height: 40px; 
+            width: auto;
+            filter: var(--logo-filter); 
+            transition: filter 0.6s ease;
         }
 
         .btn-theme-toggle {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 24px;
+            right: 24px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             color: var(--text-main);
             border-radius: 50%;
-            width: 45px;
-            height: 45px;
+            width: 48px;
+            height: 48px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            transition: transform 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            backdrop-filter: var(--glass-blur);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .btn-theme-toggle:hover { transform: scale(1.1); }
+        .btn-theme-toggle:hover { 
+            transform: scale(1.08) rotate(15deg); 
+            border-color: var(--accent);
+            color: var(--accent);
+        }
 
         .premium-container {
             width: 100%;
-            max-width: 520px;
-            padding: 20px;
-            animation: fadeIn 0.8s ease-out;
+            max-width: 460px;
+            padding: 24px;
+            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .boveda-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 30px;
+            border-radius: 28px;
+            padding: 32px;
             box-shadow: var(--shadow-card);
             text-align: center;
             position: relative;
             overflow: hidden;
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
             transition: all 0.5s ease;
-            backdrop-filter: blur(10px);
         }
 
         .thumbnail-wrapper {
             width: 100%;
-            height: 200px;
-            border-radius: 16px;
-            margin-bottom: 5px; 
+            height: 180px;
+            border-radius: 18px;
+            margin-bottom: 0; 
             overflow: hidden;
             border: 1px solid var(--border-color);
             cursor: pointer;
             position: relative;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
 
         .thumbnail-wrapper:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px var(--accent-glow);
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px var(--accent-glow);
+            border-color: var(--accent);
         }
 
         .thumbnail-image {
@@ -135,28 +169,42 @@
             object-fit: cover;
             background-color: #111; 
             display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .thumbnail-wrapper:hover .thumbnail-image {
+            transform: scale(1.05);
         }
 
         .thumbnail-overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(124, 58, 237, 0.3);
+            background: linear-gradient(to top, rgba(220,38,38,0.6), transparent);
             display: flex;
             justify-content: center;
             align-items: center;
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity 0.3s ease;
         }
 
         .thumbnail-wrapper:hover .thumbnail-overlay { opacity: 1; }
         .thumbnail-wrapper.activo .thumbnail-overlay { display: none; }
-        .thumbnail-wrapper.activo { cursor: default; transform: none; box-shadow: none; margin-bottom: 25px; }
+        
+        .thumbnail-wrapper.activo { 
+            cursor: default; 
+            transform: none; 
+            box-shadow: none; 
+            margin-bottom: 28px; 
+            height: 140px; 
+            border-color: var(--border-color);
+        }
+        .thumbnail-wrapper.activo .thumbnail-image { transform: none; filter: grayscale(20%) brightness(0.8); }
 
         #formAcceso {
             display: none; 
             opacity: 0;
-            transform: translateY(-20px);
-            transition: all 0.5s ease;
+            transform: translateY(-15px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         #formAcceso.mostrar {
@@ -167,18 +215,19 @@
 
         .input-group {
             position: relative;
-            margin-bottom: 25px;
+            margin-bottom: 24px;
             text-align: left;
         }
 
         .input-group label {
             display: block;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
-            margin-bottom: 8px;
-            font-weight: 600;
+            margin-bottom: 10px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
+            padding-left: 4px;
         }
 
         .input-wrapper {
@@ -189,55 +238,76 @@
 
         .input-icon {
             position: absolute;
-            left: 15px;
+            left: 18px;
             color: var(--accent);
-            font-size: 22px;
+            font-size: 20px;
+            transition: color 0.3s ease;
         }
 
         .elite-input {
             width: 100%;
             background: var(--input-bg);
-            border: 1px solid var(--border-color);
+            border: 1.5px solid var(--border-color);
             color: var(--text-main);
-            padding: 16px 16px 16px 50px;
-            border-radius: 12px;
-            font-size: 1rem;
+            padding: 16px 16px 16px 52px;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-weight: 500;
             outline: none;
-            transition: border-color 0.3s, box-shadow 0.3s, background 0.3s, color 0.3s;
+            transition: all 0.3s ease;
         }
 
         .elite-input:focus {
             border-color: var(--accent);
-            box-shadow: 0 0 15px var(--accent-glow);
+            background: transparent;
+            box-shadow: 0 0 0 4px var(--accent-glow);
         }
+        
+        body.light-mode .elite-input:focus {
+            background: #ffffff;
+        }
+        
+        .elite-input:focus + .input-icon { color: var(--accent-hover); }
 
         .btn-submit {
             width: 100%;
-            background: var(--accent);
+            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
             color: var(--btn-text);
             border: none;
             padding: 18px;
-            border-radius: 12px;
-            font-size: 1rem;
+            border-radius: 14px;
+            font-size: 0.95rem;
             font-weight: 800;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
-            transition: 0.3s;
-            box-shadow: 0 5px 20px var(--accent-glow);
+            gap: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 20px var(--accent-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-submit::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+            transform: skewX(-20deg);
+            transition: 0.5s;
         }
 
         .btn-submit:hover:not(:disabled) {
-            background: #8b5cf6;
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6);
+            box-shadow: 0 12px 25px rgba(220, 38, 38, 0.5);
         }
+        .btn-submit:hover:not(:disabled)::after { left: 150%; }
 
         .btn-submit:disabled {
-            background: var(--border-color);
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
             color: var(--text-muted);
             cursor: not-allowed;
             box-shadow: none;
@@ -247,127 +317,118 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            padding: 15px;
-            border-radius: 12px;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 14px;
             font-size: 0.85rem;
-            font-weight: 700;
+            font-weight: 600;
             text-align: center;
-            line-height: 1.4;
-            margin-top: 20px;
+            line-height: 1.5;
+            margin-top: 24px;
             opacity: 0;
             transform: translateY(10px);
-            transition: all 0.4s ease;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             display: none;
         }
 
         .status-msg.show { display: flex; opacity: 1; transform: translateY(0); }
-        .status-msg.info { background: rgba(124, 58, 237, 0.1); border: 1px solid var(--accent); color: var(--text-main); }
-        .status-msg.error { background: rgba(255, 0, 85, 0.1); border: 1px solid var(--error); color: var(--error); }
-        .status-msg.success { background: rgba(0, 255, 136, 0.1); border: 1px solid var(--success); color: var(--success); }
-        .status-msg.warning { background: rgba(255, 165, 0, 0.1); border: 1px solid var(--warning); color: var(--warning); }
+        .status-msg.info { background: rgba(220, 38, 38, 0.08); border: 1px solid rgba(220, 38, 38, 0.3); color: var(--text-main); }
+        .status-msg.error { background: rgba(255, 0, 85, 0.08); border: 1px solid rgba(255, 0, 85, 0.3); color: var(--error); }
+        .status-msg.success { background: rgba(0, 255, 136, 0.08); border: 1px solid rgba(0, 255, 136, 0.3); color: var(--success); }
 
-        /* PANEL DE DEBUG */
-        .debug-panel {
-            margin-top: 20px;
-            background: rgba(255, 165, 0, 0.05);
-            border: 1px solid var(--warning);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: left;
-            display: none;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .debug-panel.show { display: block; }
-
-        .debug-title {
-            font-size: 0.7rem;
-            color: var(--warning);
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .debug-item {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin: 5px 0;
-            padding-left: 10px;
-            border-left: 2px solid var(--warning);
-            font-family: 'Courier New', monospace;
+        body.light-mode .status-msg.success {
+            background: rgba(5, 150, 105, 0.1); 
+            border: 1px solid rgba(5, 150, 105, 0.4);
+            color: var(--success);
         }
 
         .result-container {
-            margin-top: 20px;
-            background: rgba(0,255,136,0.05);
-            border: 1px dashed rgba(0,255,136,0.5);
-            border-radius: 16px;
-            padding: 25px;
+            margin-top: 24px;
+            background: rgba(0, 255, 136, 0.03);
+            border: 1.5px dashed rgba(0, 255, 136, 0.4);
+            border-radius: 18px;
+            padding: 28px;
             text-align: center;
             display: none;
-            animation: fadeIn 0.5s ease-out;
+            animation: slideUpFade 0.5s ease-out;
+        }
+
+        body.light-mode .result-container {
+            background: rgba(5, 150, 105, 0.03);
+            border: 1.5px dashed rgba(5, 150, 105, 0.4);
         }
 
         .btn-link-neon {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
             background: var(--success);
-            color: #000;
-            padding: 15px 25px;
+            color: #000000;
+            padding: 16px 28px;
             border-radius: 50px;
-            font-weight: 900;
+            font-weight: 800;
             border: none;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.3s ease;
             font-size: 0.9rem;
             letter-spacing: 1px;
             width: 100%;
-            box-shadow: 0 5px 15px rgba(0,255,136,0.3);
+            box-shadow: 0 8px 20px rgba(0, 255, 136, 0.25);
+        }
+
+        body.light-mode .btn-link-neon {
+            background: var(--success);
+            color: #ffffff; 
+            box-shadow: 0 8px 20px rgba(5, 150, 105, 0.25);
         }
 
         .btn-link-neon:hover {
             background: var(--text-main);
             color: var(--bg-color);
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0,255,136,0.6);
+            box-shadow: 0 12px 30px rgba(0, 255, 136, 0.4);
+        }
+        
+        body.light-mode .btn-link-neon:hover {
+            background: #047857; 
+            color: #ffffff;
+            box-shadow: 0 12px 30px rgba(5, 150, 105, 0.4);
         }
 
-        .fa-spin { animation: spin 1s infinite linear; }
+        .fa-spin { animation: spin 1s infinite cubic-bezier(0.4, 0, 0.2, 1); }
+        
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUpFade { 
+            from { opacity: 0; transform: translateY(30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
 
         .swal-elite-popup {
             border: 1px solid var(--border-color) !important;
-            border-radius: 24px !important;
+            border-radius: 28px !important;
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 0 40px var(--accent-glow) !important;
             background: var(--modal-grad) !important;
+            backdrop-filter: var(--glass-blur) !important;
         }
 
         .swal-title-custom {
             color: var(--text-main) !important;
-            font-weight: 900;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            margin-bottom: 18px;
         }
 
         .iframe-wrapper {
             position: relative;
             width: 100%;
-            height: 60vh;
-            min-height: 450px;
-            border-radius: 12px;
+            height: 65vh;
+            min-height: 480px;
+            border-radius: 16px;
             overflow: hidden;
-            border: 1px solid rgba(0, 255, 136, 0.4);
-            box-shadow: 0 10px 30px rgba(0,255,136,0.1);
-            background: #ffffff;
+            border: 1px solid var(--border-color);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+            background: #ffffff; 
         }
     </style>
 </head>
@@ -381,24 +442,24 @@
         <div class="boveda-card">
             
             <div class="thumbnail-wrapper" id="cajaThumbnail" onclick="revelarFormulario()">
-                <img id="imgThumbnail" src="" onerror="usarImagenAlternativa(this)" alt="Thumbnail Premium" class="thumbnail-image">
+                <img id="imgThumbnail" src="" onerror="usarImagenAlternativa(this)" alt="Seguridad Premium" class="thumbnail-image">
                 <div class="thumbnail-overlay">
-                    <span class="material-icons-round" style="font-size: 40px; color: #fff;">touch_app</span>
+                    <span class="material-icons-round" style="font-size: 48px; color: #fff;">fingerprint</span>
                 </div>
             </div>
 
             <div id="formAcceso">
                 <div class="input-group">
-                    <label>Correo de la Cuenta</label>
+                    <label>Verificación de Identidad</label>
                     <div class="input-wrapper">
-                        <span class="material-icons-round input-icon">email</span>
-                        <input type="email" id="txtEmail" class="elite-input" placeholder="ejemplo@gmail.com" autocomplete="off">
+                        <span class="material-icons-round input-icon">alternate_email</span>
+                        <input type="email" id="txtEmail" class="elite-input" placeholder="Ingresa tu correo registrado" autocomplete="off">
                     </div>
                 </div>
 
                 <button id="btnBuscar" class="btn-submit" onclick="ejecutarBusqueda()">
-                    <span class="material-icons-round" id="btnIcon">search</span>
-                    <span id="btnText">BUSCAR CORREO</span>
+                    <span class="material-icons-round" id="btnIcon">radar</span>
+                    <span id="btnText">INICIAR BÚSQUEDA</span>
                 </button>
             </div>
 
@@ -407,35 +468,26 @@
                 <span id="statusText">Sistema listo.</span>
             </div>
 
-            <!-- PANEL DE DEBUG -->
-            <div id="debugPanel" class="debug-panel">
-                <div class="debug-title">
-                    <span class="material-icons-round" style="font-size: 14px;">bug_report</span>
-                    LOG DE DEPURACIÓN
-                </div>
-                <div id="debugContent"></div>
-            </div>
-
             <div id="resultadoFinal" class="result-container">
-                <p style="font-size: 0.75rem; color: var(--success); font-weight: 800; letter-spacing: 1px; margin-bottom: 15px;">CORREO ENCONTRADO</p>
+                <p style="font-size: 0.75rem; color: var(--success); font-weight: 800; letter-spacing: 1.5px; margin-bottom: 18px;">ACCESO AUTORIZADO</p>
                 <button onclick="abrirModalCorreo()" class="btn-link-neon">
-                    <span class="material-icons-round">mark_email_unread</span> 
-                    VER CORREO ORIGINAL
+                    <span class="material-icons-round">drafts</span> 
+                    VISUALIZAR MENSAJE
                 </button>
-                <div id="fechaMsg" style="margin-top: 15px; font-size: 0.75rem; color: var(--text-muted); font-weight: 600;"></div>
+                <div id="fechaMsg" style="margin-top: 18px; font-size: 0.75rem; color: var(--text-muted); font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 4px;"></div>
             </div>
 
         </div>
     </div>
 
     <script>
-        // CONFIGURACIÓN
+        
         const URL_JSON_GITHUB = "https://samabrllan-arch.github.io/Json-asunto/asuntos.json";
         const LISTA_OBREROS = [
             "https://script.google.com/macros/s/AKfycbyzpyL0LG2cnf9zln8mN9SaTcuRPm-E3lQTQSGlxiuJLxTlLtaStv7BtcjYbIib3EQl/exec"
         ];
 
-        const MI_IMAGEN_THUMBNAIL = "https://drive.google.com/thumbnail?id=TU_ID_AQUI&sz=w1000"; 
+        const MI_IMAGEN_THUMBNAIL = "https://drive.google.com/thumbnail?id=1Bp2UW2ba4Y5-yaeNAi0WQ7Rh9ewRQbYB&sz=w1000"; 
         const IMAGEN_REPUESTO = "https://images.unsplash.com/photo-1563206767-5b18f218e8de?q=80&w=1000&auto=format&fit=crop";
 
         const TIEMPO_COOLDOWN_MS = 30000;
@@ -443,7 +495,6 @@
 
         let correoHTMLActual = "";
         let enCooldown = false;
-        let debugLogs = [];
 
         document.addEventListener("DOMContentLoaded", () => {
             if (localStorage.getItem('portal_theme') === 'light') {
@@ -520,7 +571,7 @@
                     clearInterval(timer);
                     resetBoton();
                 } else {
-                    txtBtn.innerText = `ESPERA ${restante}S`;
+                    txtBtn.innerText = `ESPERANDO ${restante}S`;
                 }
             }, 1000);
         }
@@ -532,30 +583,11 @@
             const iconBtn = document.getElementById("btnIcon");
             
             btn.disabled = false;
-            txtBtn.innerText = "BUSCAR CORREO";
-            if(iconBtn) iconBtn.innerText = "search";
+            txtBtn.innerText = "INICIAR BÚSQUEDA";
+            if(iconBtn) iconBtn.innerText = "radar";
         }
 
-        function agregarDebugLog(mensaje) {
-            debugLogs.push(mensaje);
-            const debugContent = document.getElementById("debugContent");
-            const item = document.createElement("div");
-            item.className = "debug-item";
-            item.textContent = mensaje;
-            debugContent.appendChild(item);
-        }
-
-        function mostrarPanelDebug() {
-            document.getElementById("debugPanel").classList.add("show");
-        }
-
-        function limpiarDebug() {
-            debugLogs = [];
-            document.getElementById("debugContent").innerHTML = "";
-            document.getElementById("debugPanel").classList.remove("show");
-        }
-
-        async function mostrarEstado(texto, icono, clase = 'info', delay = 700) {
+        async function mostrarEstado(texto, icono, clase = 'info', delay = 600) {
             const status = document.getElementById("statusArea");
             const textEl = document.getElementById("statusText");
             const iconEl = status.querySelector(".icon-status");
@@ -563,8 +595,6 @@
             status.className = `status-msg show ${clase}`;
             iconEl.innerText = icono;
             textEl.innerHTML = texto;
-            
-            agregarDebugLog(`[${clase.toUpperCase()}] ${texto}`);
             
             await new Promise(resolve => setTimeout(resolve, delay));
         }
@@ -584,112 +614,89 @@
             if (!email) {
                 Swal.fire({ 
                     icon: 'warning', 
-                    title: 'Falta información', 
-                    text: 'Por favor, ingresa el correo.', 
+                    title: 'Campo Requerido', 
+                    text: 'Es necesario ingresar un correo electrónico válido.', 
                     background: 'var(--modal-bg)', 
-                    color: 'var(--text-main)' 
+                    color: 'var(--text-main)',
+                    confirmButtonColor: 'var(--accent)'
                 });
                 return;
             }
-
-            // Limpiar debug anterior
-            limpiarDebug();
-            mostrarPanelDebug();
 
             localStorage.setItem(KEY_LOCAL_STORAGE, Date.now());
             enCooldown = true;
 
             btn.disabled = true;
-            txtBtn.innerText = "ESCANÉANDO RED...";
-            iconBtn.innerText = "sync";
+            txtBtn.innerText = "ESTABLECIENDO CONEXIÓN...";
+            iconBtn.innerText = "leak_add";
             iconBtn.classList.add("fa-spin"); 
             resBox.style.display = "none";
             correoHTMLActual = "";
 
-            agregarDebugLog("=== INICIO DE BÚSQUEDA ===");
-            agregarDebugLog(`Email a buscar: ${email}`);
-            agregarDebugLog(`Timestamp: ${new Date().toLocaleString()}`);
-
             try {
-                // FASE 1: Obtener JSON
-                await mostrarEstado("Conectando con base de datos de asuntos...", "cloud_download", "info", 500);
+                await mostrarEstado("Consultando directivas de seguridad...", "policy", "info", 400);
                 
                 let asuntoAEnviar = "";
                 try {
-                    agregarDebugLog(`Fetching: ${URL_JSON_GITHUB}`);
                     const resJson = await fetch(URL_JSON_GITHUB, { cache: "no-store" });
-                    agregarDebugLog(`Response status: ${resJson.status}`);
-                    
-                    if (!resJson.ok) throw new Error("No se pudo cargar el JSON.");
-                    
+                    if (!resJson.ok) throw new Error("Fallo de conexión.");
                     const dataJson = await resJson.json();
-                    agregarDebugLog(`JSON recibido: ${JSON.stringify(dataJson)}`);
+                    
+                    if (dataJson.estado_admin !== 1) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'ACCESO DENEGADO',
+                            text: 'El sistema ha sido bloqueado temporalmente por el administrador.',
+                            background: 'var(--modal-bg)',
+                            color: 'var(--error)',
+                            confirmButtonColor: 'var(--error)'
+                        });
+                        throw new Error("Sistema bloqueado (Admin: 0).");
+                    }
                     
                     asuntoAEnviar = dataJson.asunto; 
-                    if (!asuntoAEnviar) throw new Error("Formato de JSON inválido.");
-                    
-                    agregarDebugLog(`Asunto extraído: "${asuntoAEnviar}"`);
+                    if (!asuntoAEnviar) throw new Error("Parámetros de búsqueda ausentes.");
                 } catch (error) {
-                    agregarDebugLog(`ERROR JSON: ${error.message}`);
-                    throw new Error("Error al obtener las reglas de búsqueda (JSON).");
+                    if(error.message.includes("Admin: 0")) throw error;
+                    throw new Error("No se pudo cargar la configuración de red.");
                 }
 
-                await mostrarEstado("Asuntos obtenidos. Iniciando barrido en servidores...", "memory");
+                await mostrarEstado("Desplegando rastreadores en la bandeja...", "troubleshoot", "info", 500);
 
-                // FASE 2: Búsqueda en Obreros
                 let infoExito = null;
 
                 for (let i = 0; i < LISTA_OBREROS.length; i++) {
                     try {
                         const urlBusqueda = `${LISTA_OBREROS[i]}?usuario=${encodeURIComponent(email)}&asunto=${encodeURIComponent(asuntoAEnviar)}`;
-                        agregarDebugLog(`Obrero ${i + 1}: ${urlBusqueda}`);
-                        
                         const r = await fetch(urlBusqueda);
-                        agregarDebugLog(`Obrero ${i + 1} response: ${r.status}`);
-                        
                         const d = await r.json();
-                        agregarDebugLog(`Obrero ${i + 1} data: ${JSON.stringify(d, null, 2)}`);
-
-                        // Mostrar logs de debug del servidor
-                        if (d.debug && Array.isArray(d.debug)) {
-                            d.debug.forEach(log => agregarDebugLog(`[SERVIDOR] ${log}`));
-                        }
 
                         if (d.exito && d.encontrado && d.cuerpo) {
                             infoExito = d;
                             correoHTMLActual = d.cuerpo; 
-                            agregarDebugLog("✓ CORREO ENCONTRADO EN ESTE OBRERO");
                             break; 
-                        } else {
-                            agregarDebugLog(`✗ No encontrado en obrero ${i + 1}: ${d.mensaje || 'Sin mensaje'}`);
                         }
                     } catch (e) {
-                        agregarDebugLog(`ERROR en obrero ${i + 1}: ${e.message}`);
-                        console.warn(`Error en obrero ${i + 1}:`, e);
+                        console.warn(`Interrupción en nodo ${i + 1}`);
                     }
                 }
 
-                if (!infoExito) {
-                    agregarDebugLog("⚠ NINGÚN OBRERO ENCONTRÓ EL CORREO");
-                    throw new Error("No se encontró ningún correo reciente. Revisa el panel de debug.");
-                }
+                if (!infoExito) throw new Error("No se detectaron mensajes recientes con las credenciales indicadas.");
 
-                // FASE 3: Éxito
-                fechaMsg.innerHTML = `<span class="material-icons-round" style="font-size:14px; vertical-align:middle;">schedule</span> Recibido: ${infoExito.hora || "Reciente"}`;
+                fechaMsg.innerHTML = `<span class="material-icons-round" style="font-size:16px;">schedule</span> Capturado a las: ${infoExito.hora || "Reciente"}`;
                 resBox.style.display = "block";
 
-                agregarDebugLog("=== BÚSQUEDA EXITOSA ===");
-                agregarDebugLog(`Remitente: ${infoExito.remitente}`);
-                agregarDebugLog(`Destinatario: ${infoExito.destinatario}`);
-                
-                await mostrarEstado("✓ Correo interceptado con éxito", "check_circle", "success");
+                await mostrarEstado("✓ Extracción completada exitosamente.", "verified_user", "success");
                 
                 iconBtn.classList.remove("fa-spin");
                 arrancarTemporizadorBloqueo();
 
             } catch (err) {
-                agregarDebugLog(`ERROR FATAL: ${err.message}`);
-                await mostrarEstado(err.message, "error", "error");
+                if(!err.message.includes("Admin: 0")) {
+                    await mostrarEstado(err.message, "gpp_bad", "error");
+                } else {
+                    document.getElementById("statusArea").classList.remove("show");
+                }
                 iconBtn.classList.remove("fa-spin");
                 arrancarTemporizadorBloqueo();
             }
@@ -700,21 +707,34 @@
             
             Swal.fire({
                 html: `
-                    <div style="padding: 5px;">
-                        <h2 class="swal-title-custom" style="font-size: ${isMobile ? '1.2rem' : '1.5rem'};">Bandeja de Entrada Segura</h2>
+                    <div style="padding: 0px 5px;">
+                        <h2 class="swal-title-custom" style="font-size: ${isMobile ? '1.1rem' : '1.3rem'}; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <span class="material-icons-round" style="color: var(--accent);">lock_open</span>
+                            VISOR SEGURO
+                        </h2>
                         <div class="iframe-wrapper">
                             <iframe id="iframeCorreo" frameborder="0" style="width: 100%; height: 100%;"></iframe>
                         </div>
                     </div>
                 `,
                 showConfirmButton: true,
-                confirmButtonText: '<span class="material-icons-round" style="vertical-align:middle; margin-right:5px;">check_circle</span> CERRAR',
-                confirmButtonColor: '#00ff88',
+                confirmButtonText: '<span class="material-icons-round" style="vertical-align:middle; margin-right:5px;">close</span> CERRAR VISOR',
+                confirmButtonColor: 'var(--card-bg)',
                 background: 'var(--modal-bg)', 
-                width: isMobile ? '98%' : '800px',
-                padding: isMobile ? '10px' : '20px',
-                customClass: { popup: 'swal-elite-popup' },
+                width: isMobile ? '96%' : '750px',
+                padding: isMobile ? '15px 10px' : '25px',
+                customClass: { 
+                    popup: 'swal-elite-popup',
+                    confirmButton: 'swal-btn-close'
+                },
                 didOpen: () => {
+                    const btn = document.querySelector('.swal-btn-close');
+                    if(btn) {
+                        btn.style.border = '1px solid var(--border-color)';
+                        btn.style.color = 'var(--text-muted)';
+                        btn.style.boxShadow = 'none';
+                    }
+
                     const iframe = document.getElementById('iframeCorreo');
                     const doc = iframe.contentWindow.document;
                     doc.open();
