@@ -10,275 +10,138 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        /* =========================================================
-           VARIABLES Y RESET
-           ========================================================= */
+        /* VARIABLES Y RESET */
         :root {
             --bg-color: #050505;
-            --card-bg: #0a0a0a;
+            --card-bg: rgba(10, 10, 10, 0.85);
             --accent: #7c3aed;
             --accent-glow: rgba(124, 58, 237, 0.4);
             --success: #00ff88;
             --error: #ff0055;
             --text-main: #ffffff;
-            --text-muted: #888888;
-            --border-color: #1a1a1a;
+            --text-muted: #aaaaaa;
+            --border-color: #222222;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex; justify-content: center; align-items: center;
             min-height: 100vh;
-            background-image: radial-gradient(circle at 50% 0%, #1a1025 0%, transparent 50%);
+            background-image: linear-gradient(to bottom, rgba(5,5,5,0.7), rgba(5,5,5,0.95)), url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
+            background-size: cover; background-position: center; background-attachment: fixed;
         }
 
-        /* =========================================================
-           CONTENEDOR PRINCIPAL
-           ========================================================= */
-        .premium-container {
-            width: 100%;
-            max-width: 480px;
-            padding: 20px;
-            animation: fadeIn 0.8s ease-out;
-        }
+        .premium-container { width: 100%; max-width: 480px; padding: 20px; animation: fadeIn 0.8s ease-out; }
 
         .boveda-card {
             background: linear-gradient(145deg, var(--card-bg) 0%, #000000 100%);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px var(--accent-glow);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+            border: 1px solid var(--border-color); border-radius: 24px;
+            padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px var(--accent-glow);
+            text-align: center; position: relative; overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: all 0.5s ease;
         }
 
-        /* =========================================================
-           THUMBNAIL (IMAGEN)
-           ========================================================= */
+        /* THUMBNAIL (IMAGEN / LOGO) */
         .thumbnail-wrapper {
-            width: 100%;
-            height: 200px;
-            border-radius: 16px;
-            margin-bottom: 25px;
-            overflow: hidden;
-            border: 1px solid #222;
-            cursor: pointer;
-            position: relative;
-            transition: transform 0.3s, box-shadow 0.3s;
+            width: 100%; height: 200px; border-radius: 16px; margin-bottom: 5px;
+            overflow: hidden; border: 1px solid #333; cursor: pointer;
+            position: relative; transition: transform 0.3s, box-shadow 0.3s;
         }
-
-        .thumbnail-wrapper:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px var(--accent-glow);
+        .thumbnail-wrapper:hover { transform: translateY(-3px); box-shadow: 0 10px 25px var(--accent-glow); }
+        
+        .thumbnail-image { 
+            width: 100%; height: 100%; object-fit: cover; 
+            display: block; background-color: #111;
         }
-
-        .thumbnail-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            /* Aquí va el link vacío para tu imagen */
-            background: url('') center/cover no-repeat #111; 
-            display: block;
-        }
-
+        
         .thumbnail-overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(124, 58, 237, 0.3); display: flex; justify-content: center;
+            align-items: center; opacity: 0; transition: opacity 0.3s;
+        }
+        .thumbnail-wrapper:hover .thumbnail-overlay { opacity: 1; }
+        
+        /* Ocultar overlay cuando se activa el formulario */
+        .thumbnail-wrapper.activo .thumbnail-overlay { display: none; }
+        .thumbnail-wrapper.activo { cursor: default; transform: none; box-shadow: none; margin-bottom: 25px; }
+
+        /* FORMULARIO OCULTO INICIALMENTE */
+        #formAcceso {
+            display: none; /* Se oculta de arranque */
             opacity: 0;
-            transition: opacity 0.3s;
+            transform: translateY(-20px);
+            transition: all 0.5s ease;
         }
 
-        .thumbnail-wrapper:hover .thumbnail-overlay {
-            opacity: 1;
-        }
-
-        /* =========================================================
-           INPUTS Y BOTONES
-           ========================================================= */
-        .input-group {
-            position: relative;
-            margin-bottom: 25px;
-            text-align: left;
-        }
-
-        .input-group label {
+        #formAcceso.mostrar {
             display: block;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 15px;
-            color: var(--accent);
-            font-size: 22px;
-        }
-
-        .elite-input {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid #333;
-            color: #fff;
-            padding: 16px 16px 16px 50px;
-            border-radius: 12px;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        .elite-input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 15px var(--accent-glow);
-        }
-
-        .btn-submit {
-            width: 100%;
-            background: var(--accent);
-            color: #fff;
-            border: none;
-            padding: 18px;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 800;
-            letter-spacing: 1px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            transition: 0.3s;
-            box-shadow: 0 5px 20px var(--accent-glow);
-        }
-
-        .btn-submit:hover:not(:disabled) {
-            background: #8b5cf6;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6);
-        }
-
-        .btn-submit:disabled {
-            background: #333;
-            color: #777;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        /* =========================================================
-           ESTADOS Y RESULTADOS
-           ========================================================= */
-        .status-msg {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-align: center;
-            line-height: 1.4;
-            margin-top: 20px;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.4s ease;
-            display: none;
-        }
-
-        .status-msg.show {
-            display: flex;
             opacity: 1;
             transform: translateY(0);
         }
 
+        /* INPUTS Y BOTONES */
+        .input-group { position: relative; margin-bottom: 25px; text-align: left; }
+        .input-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-icon { position: absolute; left: 15px; color: var(--accent); font-size: 22px; }
+        
+        .elite-input {
+            width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid #333;
+            color: #fff; padding: 16px 16px 16px 50px; border-radius: 12px;
+            font-size: 1rem; outline: none; transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .elite-input:focus { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+
+        .btn-submit {
+            width: 100%; background: var(--accent); color: #fff; border: none;
+            padding: 18px; border-radius: 12px; font-size: 1rem; font-weight: 800;
+            letter-spacing: 1px; cursor: pointer; display: flex; justify-content: center;
+            align-items: center; gap: 10px; transition: 0.3s; box-shadow: 0 5px 20px var(--accent-glow);
+        }
+        .btn-submit:hover:not(:disabled) { background: #8b5cf6; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6); }
+        .btn-submit:disabled { background: #333; color: #777; cursor: not-allowed; box-shadow: none; }
+
+        /* ESTADOS Y RESULTADOS */
+        .status-msg {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 15px; border-radius: 12px; font-size: 0.85rem; font-weight: 700;
+            text-align: center; line-height: 1.4; margin-top: 20px; opacity: 0;
+            transform: translateY(10px); transition: all 0.4s ease; display: none;
+        }
+        .status-msg.show { display: flex; opacity: 1; transform: translateY(0); }
         .status-msg.info { background: rgba(124, 58, 237, 0.1); border: 1px solid var(--accent); color: #fff; }
         .status-msg.error { background: rgba(255, 0, 85, 0.1); border: 1px solid var(--error); color: #ff4d88; }
         .status-msg.success { background: rgba(0, 255, 136, 0.1); border: 1px solid var(--success); color: var(--success); }
 
         .result-container {
-            margin-top: 20px;
-            background: rgba(0,255,136,0.05);
-            border: 1px dashed rgba(0,255,136,0.5);
-            border-radius: 16px;
-            padding: 25px;
-            text-align: center;
-            display: none;
-            animation: fadeIn 0.5s ease-out;
+            margin-top: 20px; background: rgba(0,255,136,0.05); border: 1px dashed rgba(0,255,136,0.5);
+            border-radius: 16px; padding: 25px; text-align: center; display: none; animation: fadeIn 0.5s ease-out;
         }
-
         .btn-link-neon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            background: var(--success);
-            color: #000;
-            padding: 15px 25px;
-            border-radius: 50px;
-            font-weight: 900;
-            border: none;
-            cursor: pointer;
-            transition: 0.3s;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            width: 100%;
-            box-shadow: 0 5px 15px rgba(0,255,136,0.3);
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            background: var(--success); color: #000; padding: 15px 25px; border-radius: 50px;
+            font-weight: 900; border: none; cursor: pointer; transition: 0.3s;
+            font-size: 0.9rem; letter-spacing: 1px; width: 100%; box-shadow: 0 5px 15px rgba(0,255,136,0.3);
         }
+        .btn-link-neon:hover { background: #fff; transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,255,136,0.6); }
 
-        .btn-link-neon:hover {
-            background: #fff;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0,255,136,0.6);
-        }
-
-        /* =========================================================
-           MODAL SWEETALERT Y ANIMACIONES
-           ========================================================= */
+        /* MODAL Y ANIMACIONES */
         .fa-spin { animation: spin 1s infinite linear; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .swal-elite-popup {
-            border: 1px solid rgba(124, 58, 237, 0.2) !important;
-            border-radius: 24px !important;
+            border: 1px solid rgba(124, 58, 237, 0.2) !important; border-radius: 24px !important;
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.9), 0 0 40px var(--accent-glow) !important;
             background: linear-gradient(145deg, #0a0a0a, #0f0f11) !important;
         }
-
         .iframe-wrapper {
-            position: relative;
-            width: 100%;
-            height: 60vh;
-            min-height: 450px;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid rgba(0, 255, 136, 0.4);
-            box-shadow: 0 10px 30px rgba(0,255,136,0.1);
-            background: #ffffff; /* Fondo blanco para el iframe del correo */
+            position: relative; width: 100%; height: 60vh; min-height: 450px; border-radius: 12px;
+            overflow: hidden; border: 1px solid rgba(0, 255, 136, 0.4); box-shadow: 0 10px 30px rgba(0,255,136,0.1); background: #ffffff;
         }
     </style>
 </head>
@@ -287,8 +150,8 @@
     <div class="premium-container">
         <div class="boveda-card">
             
-            <div class="thumbnail-wrapper" onclick="enfocarInput()">
-                <img src="" alt="Thumbnail Premium" class="thumbnail-image">
+            <div class="thumbnail-wrapper" id="cajaThumbnail" onclick="revelarFormulario()">
+                <img id="imgThumbnail" src="" onerror="usarImagenAlternativa(this)" alt="Seguridad" class="thumbnail-image">
                 <div class="thumbnail-overlay">
                     <span class="material-icons-round" style="font-size: 40px; color: #fff;">touch_app</span>
                 </div>
@@ -327,33 +190,125 @@
     </div>
 
     <script>
-        /**
-         * ===============================================================
-         * LÓGICA JAVASCRIPT - VERSIÓN ELITE
-         * ===============================================================
-         */
-
-        // 1. CONFIGURACIÓN
-        const URL_JSON_GITHUB = "https://samabrllan-arch.github.io/Json-asunto/asuntos.json";
-
+        /** ==========================================================
+         * ZONA DE CONFIGURACIÓN
+         * ========================================================== */
+        
+        // 1. URLs DE APIS
+        const URL_JSON_GITHUB = "https://samabrllan-arch.github.io/Json-asunto/asuntos.json"; 
         const LISTA_OBREROS = [
-            "https://script.google.com/macros/s/AKfycbyzpyL0LG2cnf9zln8mN9SaTcuRPm-E3lQTQSGlxiuJLxTlLtaStv7BtcjYbIib3EQl/exec"
+            "https://script.google.com/macros/s/AKfycbyzpyL0LG2cnf9zln8mN9SaTcuRPm-E3lQT/exec",
         ];
 
+        // 2. CONFIGURACIÓN DE IMÁGENES
+        // 🔥 TRUCO DE GOOGLE DRIVE: Reemplaza TU_ID_AQUI por el ID real de tu imagen
+        const MI_IMAGEN_THUMBNAIL = "https://drive.google.com/thumbnail?id=ACA&sz=w1000"; 
+        const IMAGEN_REPUESTO = "https://images.unsplash.com/photo-1563206767-5b18f218e8de?q=80&w=1000&auto=format&fit=crop";
+
+        // 3. CONFIGURACIÓN DE SEGURIDAD (LocalStorage)
+        const TIEMPO_COOLDOWN_MS = 30000; // 30 Segundos de bloqueo estricto
+        const KEY_LOCAL_STORAGE = "_portal_ultimo_intento";
+
+        // Variables globales
         let correoHTMLActual = "";
         let enCooldown = false;
 
-        // Enter para ejecutar en el input
+        /** ==========================================================
+         * INICIALIZACIÓN Y EVENTOS
+         * ========================================================== */
+        document.addEventListener("DOMContentLoaded", () => {
+            const imgEl = document.getElementById("imgThumbnail");
+            // Lógica de imagen: Si el usuario puso una URL, úsala. Si no, usa la de repuesto.
+            if (MI_IMAGEN_THUMBNAIL.trim() !== "") {
+                imgEl.src = MI_IMAGEN_THUMBNAIL;
+            } else {
+                imgEl.src = IMAGEN_REPUESTO;
+            }
+
+            // Validar si recargó la página estando bloqueado
+            verificarCooldownLocal();
+        });
+
+        // Evento Enter
         document.getElementById("txtEmail").addEventListener("keydown", e => {
             if (e.key === "Enter") ejecutarBusqueda();
         });
 
-        // Enfocar el input al dar clic en la imagen
-        function enfocarInput() {
-            document.getElementById("txtEmail").focus();
+        // Fallback en caso de que MI_IMAGEN_THUMBNAIL esté rota
+        function usarImagenAlternativa(img) {
+            img.src = IMAGEN_REPUESTO;
         }
 
-        // Utilidad para cambiar mensajes de estado
+        // Revelar formulario con animación al hacer click en la imagen
+        function revelarFormulario() {
+            const form = document.getElementById("formAcceso");
+            const thumb = document.getElementById("cajaThumbnail");
+            
+            if (!form.classList.contains("mostrar")) {
+                form.style.display = "block";
+                thumb.classList.add("activo");
+                
+                // Pequeño timeout para que la transición CSS funcione correctamente
+                setTimeout(() => {
+                    form.classList.add("mostrar");
+                    document.getElementById("txtEmail").focus();
+                }, 50);
+            }
+        }
+
+        /** ==========================================================
+         * LÓGICA DEL COOLDOWN EN LOCALSTORAGE
+         * ========================================================== */
+        function verificarCooldownLocal() {
+            const ultimoIntento = localStorage.getItem(KEY_LOCAL_STORAGE);
+            if (ultimoIntento) {
+                const tiempoPasado = Date.now() - parseInt(ultimoIntento);
+                if (tiempoPasado < TIEMPO_COOLDOWN_MS) {
+                    // Si recargó y aún no pasan 30s, retomamos el temporizador
+                    arrancarTemporizadorBloqueo();
+                }
+            }
+        }
+
+        function arrancarTemporizadorBloqueo() {
+            enCooldown = true;
+            const btn = document.getElementById("btnBuscar");
+            const txtBtn = document.getElementById("btnText");
+            const iconBtn = document.getElementById("btnIcon");
+
+            btn.disabled = true;
+
+            const timer = setInterval(() => {
+                const ultimoIntento = localStorage.getItem(KEY_LOCAL_STORAGE);
+                if (!ultimoIntento) { clearInterval(timer); resetBoton(); return; }
+
+                const tiempoPasado = Date.now() - parseInt(ultimoIntento);
+                const restante = Math.ceil((TIEMPO_COOLDOWN_MS - tiempoPasado) / 1000);
+
+                if (restante <= 0) {
+                    clearInterval(timer);
+                    resetBoton();
+                } else {
+                    txtBtn.innerText = `ESPERA ${restante}S`;
+                }
+            }, 1000);
+        }
+
+        function resetBoton() {
+            enCooldown = false;
+            const btn = document.getElementById("btnBuscar");
+            const txtBtn = document.getElementById("btnText");
+            const iconBtn = document.getElementById("btnIcon");
+            
+            btn.disabled = false;
+            txtBtn.innerText = "BUSCAR CORREO";
+            if(iconBtn) iconBtn.innerText = "search";
+        }
+
+
+        /** ==========================================================
+         * MOTOR DE BÚSQUEDA
+         * ========================================================== */
         async function mostrarEstado(texto, icono, clase = 'info', delay = 700) {
             const status = document.getElementById("statusArea");
             const textEl = document.getElementById("statusText");
@@ -366,11 +321,13 @@
             await new Promise(resolve => setTimeout(resolve, delay));
         }
 
-        /**
-         * 2. FLUJO PRINCIPAL DE BÚSQUEDA
-         */
         async function ejecutarBusqueda() {
+            // DOBLE VERIFICACIÓN DE SEGURIDAD (Cooldown en memoria y LocalStorage)
             if (enCooldown) return;
+            const ultimoIntento = localStorage.getItem(KEY_LOCAL_STORAGE);
+            if (ultimoIntento && (Date.now() - parseInt(ultimoIntento) < TIEMPO_COOLDOWN_MS)) {
+                return; // Silenciosamente ignoramos el clic si intenta bypasear
+            }
 
             const email = document.getElementById("txtEmail").value.trim();
             const btn = document.getElementById("btnBuscar");
@@ -380,107 +337,92 @@
             const fechaMsg = document.getElementById("fechaMsg");
 
             if (!email) {
-                Swal.fire({ icon: 'warning', title: 'Falta información', text: 'Por favor, ingresa el correo de la cuenta.', background: '#0a0a0a', color: '#fff' });
+                Swal.fire({ icon: 'warning', title: 'Falta información', text: 'Por favor, ingresa el correo.', background: '#0a0a0a', color: '#fff' });
                 return;
             }
 
-            // Reset de UI
+            // BLOQUEO INICIAL DE UI Y REGISTRO EN LOCALSTORAGE
+            localStorage.setItem(KEY_LOCAL_STORAGE, Date.now()); // <--- ¡AQUÍ SE CLAVA EL SEGURO DE 30S!
+            enCooldown = true;
             btn.disabled = true;
-            txtBtn.innerText = "ESCANÉANDO RED...";
-            iconBtn.innerText = "sync";
+            txtBtn.innerText = "VERIFICANDO ACCESO...";
+            iconBtn.innerText = "admin_panel_settings";
             iconBtn.classList.add("fa-spin"); 
             resBox.style.display = "none";
             correoHTMLActual = "";
+            document.getElementById("statusArea").classList.remove("show");
 
             try {
-                // FASE 1: Obtener JSON de GitHub
-                await mostrarEstado("Conectando con base de datos de asuntos...", "cloud_download", "info", 500);
-                
-                let asuntoAEnviar = "";
+                let configAdmin = null;
                 try {
                     const resJson = await fetch(URL_JSON_GITHUB, { cache: "no-store" });
-                    if (!resJson.ok) throw new Error("No se pudo cargar el JSON.");
-                    const dataJson = await resJson.json();
-                    
-                    // Asegúrate de que tu JSON tenga la llave "asunto"
-                    asuntoAEnviar = dataJson.asunto; 
-                    if (!asuntoAEnviar) throw new Error("Formato de JSON inválido.");
+                    if (!resJson.ok) throw new Error("Fallo al conectar con el servidor central.");
+                    configAdmin = await resJson.json();
                 } catch (error) {
-                    throw new Error("Error al obtener las reglas de búsqueda (JSON). Revisa la URL.");
+                    throw new Error("No se pudo leer la configuración (JSON).");
                 }
 
-                await mostrarEstado("Asuntos obtenidos. Iniciando barrido en los servidores obreros...", "memory");
+                if (configAdmin.estado_admin === 0) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'ACCESO DENEGADO',
+                        text: 'ERROR ADMIN: El sistema se encuentra desactivado temporalmente.',
+                        background: '#0a0a0a',
+                        color: '#ff0055',
+                        confirmButtonColor: '#ff0055'
+                    });
+                    throw new Error("Sistema desactivado por el administrador.");
+                }
 
-                // FASE 2: Iterar por los obreros enviando Email y Asunto
+                const asuntoAEnviar = configAdmin.asunto;
+                if (!asuntoAEnviar) throw new Error("Formato de JSON inválido (falta 'asunto').");
+
+                txtBtn.innerText = "ESCANÉANDO RED...";
+                iconBtn.innerText = "sync";
+                await mostrarEstado("Acceso concedido. Buscando en los servidores obreros...", "memory");
+
                 let infoExito = null;
 
                 for (let i = 0; i < LISTA_OBREROS.length; i++) {
                     try {
                         const urlBusqueda = `${LISTA_OBREROS[i]}?usuario=${encodeURIComponent(email)}&asunto=${encodeURIComponent(asuntoAEnviar)}`;
-                        const r = await fetch(urlBusqueda);
+                        const r = await fetch(urlBusqueda, { redirect: "follow" });
+                        if (!r.ok) continue; 
+                        
                         const d = await r.json();
 
                         if (d.exito && d.encontrado && d.cuerpo) {
                             infoExito = d;
-                            correoHTMLActual = d.cuerpo; // Guardamos el HTML del correo
-                            break; // Detenemos la búsqueda si encontramos uno
+                            correoHTMLActual = d.cuerpo;
+                            break; 
                         }
                     } catch (e) {
                         console.warn(`Error en obrero ${i + 1}:`, e);
                     }
                 }
 
-                if (!infoExito) throw new Error("No se encontró ningún correo reciente con ese parámetro.");
+                if (!infoExito) throw new Error("No se encontró ningún correo reciente.");
 
-                // FASE 3: Mostrar el éxito
                 fechaMsg.innerHTML = `<span class="material-icons-round" style="font-size:14px; vertical-align:middle;">schedule</span> Recibido a las: ${infoExito.hora || "Reciente"}`;
                 resBox.style.display = "block";
 
                 await mostrarEstado("Proceso finalizado. Correo interceptado con éxito.", "check_circle", "success");
-                
-                // Finalizar UI y arrancar cooldown
                 iconBtn.classList.remove("fa-spin");
-                iniciarCooldown();
+                
+                // Disparamos el contador visual basado en el LocalStorage
+                arrancarTemporizadorBloqueo();
 
             } catch (err) {
                 await mostrarEstado(err.message, "error", "error");
-                
-                btn.disabled = false;
-                txtBtn.innerText = "INTENTAR DE NUEVO";
                 iconBtn.classList.remove("fa-spin");
-                iconBtn.innerText = "refresh";
+                // Si hay error, igual tienen que cumplir su castigo de tiempo
+                arrancarTemporizadorBloqueo();
             }
         }
 
-        /**
-         * 3. TEMPORIZADOR DE COOLDOWN
-         */
-        function iniciarCooldown() {
-            enCooldown = true;
-            let restante = 20; // 20 Segundos de espera
-            const btn = document.getElementById("btnBuscar");
-            const txtBtn = document.getElementById("btnText");
-            const iconBtn = document.getElementById("btnIcon");
-
-            btn.disabled = true;
-
-            const timer = setInterval(() => {
-                restante--;
-                txtBtn.innerText = `ESPERA ${restante}S`;
-
-                if (restante <= 0) {
-                    clearInterval(timer);
-                    enCooldown = false;
-                    btn.disabled = false;
-                    txtBtn.innerText = "BUSCAR CORREO";
-                    if(iconBtn) iconBtn.innerText = "search";
-                }
-            }, 1000);
-        }
-
-        /**
-         * 4. ABRIR MODAL CON EL HTML DEL CORREO
-         */
+        /** ==========================================================
+         * VISUALIZADOR DEL CORREO (MODAL Y TARGET=_BLANK)
+         * ========================================================== */
         window.abrirModalCorreo = function() {
             const isMobile = window.innerWidth <= 768;
             
@@ -501,11 +443,18 @@
                 padding: isMobile ? '10px' : '20px',
                 customClass: { popup: 'swal-elite-popup' },
                 didOpen: () => {
-                    // Inyectamos el HTML puro directamente en el iframe una vez abierto el modal
                     const iframe = document.getElementById('iframeCorreo');
                     const doc = iframe.contentWindow.document;
                     doc.open();
-                    doc.write(correoHTMLActual);
+                    
+                    let htmlModificado = correoHTMLActual;
+                    if (htmlModificado.includes('<head>')) {
+                        htmlModificado = htmlModificado.replace('<head>', '<head><base target="_blank">');
+                    } else {
+                        htmlModificado = '<base target="_blank">' + htmlModificado;
+                    }
+
+                    doc.write(htmlModificado);
                     doc.close();
                 }
             });
